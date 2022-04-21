@@ -1,5 +1,5 @@
 main: main.o mcTranslator.o speechAssist.o
-	g++ -std=c++11 main.o mcTranslator.o speechAssist.o -o main
+	g++ -std=c++11 -framework Python main.o mcTranslator.o speechAssist.o -o main
 
 main.o: main.cpp
 	g++ -std=c++11 -c main.cpp

@@ -46,7 +46,7 @@ public:
 
 
 
-// SPEECH CLASS -- WORK IN PROGRESS 
+// SPEECH CLASS 
 // The Speech class allows the user to provide mp3 audio files that will undergo 
 // speech-to-text (STT) conversion with the help of the API AssemblyAI (www.assemblyai.com). 
 // The converted text will contain the decypted message the user wants to communicate 
@@ -55,12 +55,14 @@ public:
 class Speech {
 public:
 	std::string decryptedMessage;
-	std::string rbgColor = DEFAULTCOLOR; // taken from speech-to-text conversion 
+	std::string rgbColor; // taken from speech-to-text conversion 
 						  // if not specified, then stays default color
+	int tempo;
 public:
-	Speech(std::string mp3); 
-	std::string voiceToText(std::string mp3); // WIP
-	bool colorInText(std::string text); // find things like "in red" after tts conversion 
+	Speech(); 
+	std::string voiceToText();
+	std::string colorInText(std::string text); // find things like "in red" after tts conversion 
+	std::string speedInText(std::string text);
 	static bool addSTTColor(std::string const& colorName, std::string const& color); 
 };
 

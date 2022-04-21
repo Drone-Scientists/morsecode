@@ -28,8 +28,8 @@ namespace mcInfo {
 	}
 
 	void printTTSColors(map<string, string>& voiceToColors) { // print TTS map vals
-		cout << "The following colors can be recognized in your mp3\n" <<
-		"voice message recording when 'in (color-name)' is said.\n";
+		cout << "The following colors can be recognized when you speak your " <<
+		"message\n into the microphone when 'in (color-name) is said.\n";
 		cout << "\nTEXT TO SPEECH COLORS:\n";
 		map<string, string>::iterator it;
 		for (it = voiceToColors.begin(); it != voiceToColors.end(); it++) {
@@ -44,7 +44,11 @@ namespace mcInfo {
 		"2) '-' is a 'dah' -> LED pulse equivalent to 3 dits in length\n" <<
 		"3) all characters in morse code are followed by a ' ' space.\n" <<
 		"4) '/' represents a space inbetween words, and is also followed\n" <<
-		"    by a ' ' space.\n";
+		"    by a ' ' space.\n\n";
+
+		string resp;
+		cout << "Type <Y> to see the Morse Code Key.\n";
+		getline(cin, resp);
 
 		mcInfo::printMCKey(mcKey);
 	}
@@ -66,12 +70,12 @@ namespace userHandler {
 	void printMenu() {
 		cout << "\n[ - - - M E N U - - - ]\n\n" <<
 		"(1) Add a Message\n" << // 2 routes, have message or have MC 
-		"(2) Add a Message via mp3 recording\n" << // WORK IN PROG 
+		"(2) Add a Message by speaking into your microphone\n" <<
 		"(3) Print Saved Messages\n" << 
 		"(4) Send Message to Drone\n" << // WORK IN PROG 
 		"(5) Delete Messages\n" <<
 		"(6) Print Morse Code Key\n" <<
-		"(7) Print Colors that can be recognized in mp3 STT\n" <<
+		"(7) Print Colors options for Speech to Text (STT)\n" <<
 		"(8) Add Colors for Speech to Text (STT)\n" <<
 		"(9) Exit Program\n";
 
@@ -138,19 +142,20 @@ namespace userHandler {
 
 		// USER MAKING MESSAGE OBJECT 
 		while (1) {
+			cin.ignore(); // fixes so dont have to hit enter twice
 			try {
 				if (numResp == 1) { // user has normal message
 					string maxDec = to_string(MAXDECRYPTEDTLEN);
 					cout << "\nPlease enter your decrypted message of max length " +
 					maxDec << endl; 
-					cin >> resp; cin.ignore(); getline(cin, resp); // allows spaces
+					getline(cin, resp);
 					mess = new Message(resp, false);
 
 				} else { // user has their message in MC 
 					string maxEnc = to_string(MAXENCRPYEDTLEN);
 					cout << "\nPlease enter your encrypted message of max length " +
 					maxEnc << endl;
-					cin >> resp; cin.ignore(); getline(cin, resp); // allows spaces
+					getline(cin, resp);
 					mess = new Message(resp, true);
 				}
 			} catch (exception& e) {
@@ -208,11 +213,6 @@ namespace userHandler {
 	}
 
 
-	void addMP3MessageHandler(vector<MessageDetails>& vect) { 
-		// WORK IN PROGRESS - post midterm mile:)
-		// utilize Speech class (also WOP) that uses AssemblyAI API 
-	}
-
 	void sendMessage(vector<MessageDetails>& vect) { 
 		// WORK IN PROGRESS - post midterm mile
 	}
@@ -240,16 +240,17 @@ namespace userHandler {
 	void addColorHandler() {
 		cout << "\nIs there a color you'd like to add for STT? ('Y' or 'N')" << endl;
 		if (!userHandler::yesNoResponse()) return;
+		cin.ignore();
 		while (1) { // user can keep adding colors until want go back to Menu
 			string newSTTrgb;
 			string newSTTColorName;
 
 			cout << "Enter in the color's hex value. Example: 'FF0000'" << endl;
-			cin >> newSTTrgb; cin.ignore(); getline(cin, newSTTrgb);
+			getline(cin, newSTTrgb);
 
 			cout << "Enter the color name that will be associated with " + 
-			newSTTrgb + " for STT." << endl;
-			cin >> newSTTColorName; cin.ignore(); getline(cin, newSTTColorName);
+			newSTTrgb + " for STT" << endl;
+			getline(cin, newSTTColorName);
 
 			if (!Speech::addSTTColor(newSTTColorName, newSTTrgb)) {
 				cout << "INVALID. Try again. See example: 'red' and 'FF0000'." << endl;
@@ -258,11 +259,23 @@ namespace userHandler {
 
 			cout << "Success! The color " + newSTTColorName + " (" + newSTTrgb + ")"
 			+ " has been added\nfor Speech-to-Text Conversion." << endl;
-			cout << "Would you like to add another color for STT?";
+			cout << "Would you like to add another color for STT? ('Y' or 'N')" << endl;
 			if (!userHandler::yesNoResponse()) break;
+			cin.ignore();
 		}
 	}
 
+	void addMP3MessageHandler(vector<MessageDetails>& vect) { 
+
+	}
+
+};
+
+namespace voiceToTextInfo {
+	void printVoiceToTextInfo() {
+		cout << "To add a your Message via speech, you can speak into\n" <<
+		"your microphone when prompted. You may \n";
+	}
 };
 
 
@@ -318,6 +331,7 @@ int main() {
 
 		} else if (menuPick == 7) { // print colors
 			mcInfo::printTTSColors(voiceToColors);
+			userHandler::backToMenu();
 
 		} else if (menuPick == 8) { // add colors 
 			mcInfo::printTTSColors(voiceToColors);
@@ -325,7 +339,6 @@ int main() {
 
 		} else {
 			userHandler::exitHandler(vect);
-			userHandler::backToMenu();
 		}
 	}
 
