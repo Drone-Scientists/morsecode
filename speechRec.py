@@ -5,40 +5,39 @@ import playsound
 import pyaudio
 from gtts import gTTS
 
-class Speak:
-	# Can speak into the microphone and then returns what's 
-	# said as a string 
-	def speakToMic():
-		recObj = sr.Recognizer()
-		# microphone is what will be the input stream
-		with sr.Microphone() as inputSource:
-			print("Speak your morse code message")
-			audio = recObj.listen(inputSource)
-			capturedAudio = ""
 
-			try:
-				capturedAudio = recObj.recognize_google(audio) # use google API for STT
+def speakToMic():
+	recObj = sr.Recognizer()
+	# microphone is what will be the input stream
+	with sr.Microphone() as inputSource:
+		audio = recObj.listen(inputSource)
+		capturedAudio = ""
 
-			# Can get an error if:
-				# API doesnt understand what you said
-				# mic isn't picking up anything
-				# etc.
-			except Exception as e: 
-				print("Exception found while recording audio.\n Exception: " + e)
+		try:
+			capturedAudio = recObj.recognize_google(audio) # use google API for STT
 
-		return capturedAudio
+		# Can get an error if:
+			# API doesnt understand what you said
+			# mic isn't picking up anything
+			# etc.
+		except Exception as e: 
+			print("Exception found while recording audio.\n Exception: " + e)
 
-	# output text variable as speaker audio 
-	def speakToYou(text):
-		tts = gTTS(text="you said "+text, lang="en")
-		tts.save("morseCodeMessage.mp3")
-		playsound.playsound("morseCodeMessage.mp3")
+	return capturedAudio
+
+# output text variable as speaker audio 
+def speakToYou(text):
+	tts = gTTS(text="you said "+text, lang="en")
+	tts.save("morseCodeMessage.mp3")
+	playsound.playsound("morseCodeMessage.mp3")
 
 # MAIN
 
-#cap = speakToMic()
-#print(cap)
+cap = speakToMic()
+print(cap)
 #speakToYou("peanut butter jelly time")
+
+#print("HELLO IN PYTHON!")
 
 
 

@@ -2,9 +2,12 @@
 #include <iostream>
 #include <map>
 #include <algorithm>
+#include <stdlib.h>
 #include <stdexcept>
+#include <array>
 #include <ctype.h>
-#include <python2.7/Python.h> // qualify the include
+//#include <python2.7/Python.h> // qualify the include
+// #include </opt/homebrew/bin/python3.9
 #include <string>
 using namespace std;
 
@@ -130,44 +133,40 @@ Speech::Speech() {
 	decryptedMessage = "";
 	rgbColor = "haha";
 	tempo = 5;
-	// string text = voiceToText();
+	string text = voiceToText();
 	// Check if text has commands in them 
 
 	// at very end, if decrypted > MAXLENGTH, then throw exception 
 }
 
 string Speech::voiceToText() { 
-	// PyObject: Generic type Python object in C
-	PyObject *pyMod;
-	PyObject *pyClass;
-	PyObject *pyArgs;
-	PyObject *pyInst;
-	PyObject *pyMethod; 
-	PyObject *pyRes;
+	//cin.ignore();
+	//getline(cin, messageFromPython);
+	//system("/usr/bin/python3 speechRec.py");
+	//getline(cin, messageFromPython);
+	// retrieve message that python file printed to stdout
+	//cin.ignore();
+	//getline(cin, messageFromPython);
+	//return "hello world";
 
-	Py_Initialize();
-	pyMod = PyImport_ImportModule("speechRec"); // import the python module
-	pyClass = PyObject_GetAttrString(pyMod, "Speak"); // perform attr quals
-	Py_DECREF(pyMod); // give away ownership of obj passed to C from API 
+	string spokenMessage;
+	std::array<char, 256> buff;
 
-	pyArgs = Py_BuildValue(" () ");
-	pyInst = PyEval_CallObject(pyClass, pyArgs);
-	Py_DECREF(pyClass);
-	Py_DECREF(pyArgs);
+	FILE* fp; // file pointer
+	// calls python file, pipe, and read what file prints to stdout
+	cout << "Speak your morse code message" << std::endl;
+	fp = popen("/usr/bin/python3 speechRec.py", "r");
+	if (fp == NULL) {
+		std::cerr << "Error calling python STT program.\n" << std::endl;
+		cout << "error !!\n";
+	}
+	while(fgets(buff.data(), 256, fp) != NULL) {
+		spokenMessage += buff.data();
+	}
+	pclose(fp);
 
-	pyMethod = PyObject_GetAttrString(pyInst, "speakToMic");
-	Py_DECREF(pyInst);
-	// pyArgs = PyBuildValue(" () ");
-	pyRes = PyEval_CallObject(pyMethod, pyArgs); // calls the python method stM
-	Py_DECREF(pyMethod);
-	Py_DECREF(pyArgs);
-
-	char* cstr;
-	PyArg_Parse(pyRes, "s", &cstr);
-	printf("%s\n", cstr);
-	Py_DECREF(pyRes);
-
-	return "hello world";
+	cout << "YOU SAID: " + spokenMessage;
+	return spokenMessage;
 
 }
 

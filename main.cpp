@@ -266,7 +266,9 @@ namespace userHandler {
 	}
 
 	void addMP3MessageHandler(vector<MessageDetails>& vect) { 
-
+		Speech* s;
+		s = new Speech();
+		return;
 	}
 
 };
@@ -313,7 +315,8 @@ int main() {
 			userHandler::addMessageHandler(vect);
 
 		} else if (menuPick == 2) { // add via mp3
-			// WIP
+			userHandler::addMP3MessageHandler(vect);
+			userHandler::backToMenu();
 
 		} else if (menuPick == 3) { // print saved messages
 			userHandler::printMessageList(vect);
