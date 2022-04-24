@@ -31,13 +31,9 @@ def speakToYou(text):
 	tts.save("morseCodeMessage.mp3")
 	playsound.playsound("morseCodeMessage.mp3")
 
-# MAIN
 
 cap = speakToMic()
 print(cap)
-#speakToYou("peanut butter jelly time")
-
-#print("HELLO IN PYTHON!")
 
 
 

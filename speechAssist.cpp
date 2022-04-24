@@ -6,8 +6,6 @@
 #include <stdexcept>
 #include <array>
 #include <ctype.h>
-//#include <python2.7/Python.h> // qualify the include
-// #include </opt/homebrew/bin/python3.9
 #include <string>
 using namespace std;
 
@@ -17,8 +15,11 @@ map<string, string> voiceToColors = {
 	{"pink", "FFC0CB"}, {"brown", "A52A2A"}
 };
 
+// used when user specifies speed vocally in morse code command 
+// 
 map<string, int> voiceToSpeeds  {
-	{"one", 1}, {"two", 2}, {"three", 3}, {"four", 4}, {"five", 5}
+	{"one", 1}, {"won", 1}, {"two", 2}, {"to", 2}, {"too", 2},
+	{"three", 3}, {"four", 4}, {"for", 4}, {"five", 5}
 };
 
 MorseCodeMod::MorseCodeMod() { 
@@ -189,7 +190,22 @@ bool Speech::addSTTColor(string const& colorName, string const& color) {
 
 
 
+from graphics import *
 
+# Variables / Constants
+WINDOW_WIDTH = 500
+WINDOW_HEIGHT = 500
+
+def main():
+	window = GraphWin("Drone Window", WINDOW_WIDTH, WINDOW_HEIGHT)
+	window.setBackground() # black background
+
+
+	# respond to user hitting red x
+	win.getMouse()
+	win.close()
+
+main()
 
 
 
