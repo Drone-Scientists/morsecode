@@ -266,19 +266,37 @@ namespace userHandler {
 	}
 
 	void addMP3MessageHandler(vector<MessageDetails>& vect) { 
-		Speech* s;
-		s = new Speech();
+		string resp;
+		cout << "Type <Y> when ready to speak into your microphone\n";
+		getline(cin, resp); // waits for user to type Y (no error checking)
+
+		Speech* s = new Speech();
 		cout << "\nSPEECH:\n";
 		s->printSpeech();
+
+		// Now add this to menu vector
+
 		return;
 	}
 
 };
 
-namespace voiceToTextInfo {
-	void printVoiceToTextInfo() {
-		cout << "To add a your Message via speech, you can speak into\n" <<
-		"your microphone when prompted. You may \n";
+namespace speechToTextInfo {
+	void printSpeechToTextInfo() {
+		cout << "\n\nSPEECH TO TEXT INFO:\n";
+		cout << "To add your Message via speech, speak into your \n" <<
+		"microphone when prompted. You may use (optional) voice commands\n" <<
+		"to set LED color and morse code speed (1 being the slowest and\n" <<
+		std::to_string(NUMLEDSPEEDS) << " being the fastest." << endl;
+	}
+
+	void printSpeechToTextExamples() {
+		cout << "\nSpeech To Text Examples (w/ and w/o commands): \n" <<
+		"hello world\nhello world in speed four\nhello world in color red\n" <<
+		"hello world in speed four and in color red\n" <<
+		"** Note: must use words 'in speed' & 'in color' for commands\n" <<
+		"** Note: color name must be available (menu option 8 to add a " <<
+		"color for STT\n" << endl;
 	}
 };
 
@@ -317,6 +335,8 @@ int main() {
 			userHandler::addMessageHandler(vect);
 
 		} else if (menuPick == 2) { // add via mp3
+			speechToTextInfo::printSpeechToTextInfo();
+			speechToTextInfo::printSpeechToTextExamples();
 			userHandler::addMP3MessageHandler(vect);
 			userHandler::backToMenu();
 

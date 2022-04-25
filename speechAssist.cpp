@@ -302,12 +302,50 @@ string Speech::toLowerCase(string text) {
 	int textLength = text.size(); // bound
 	string lowerCaseText = text;
 	for (int i = 0; i < textLength; i++) {
-		lowerCaseText[i] = tolower(lowerCaseText[i]); // set char equal to itself lowercase
+		lowerCaseText[i] = tolower(lowerCaseText[i]); // char = to itself lower
 	}
 	return lowerCaseText; 
 }
 
+bool Speech::setDecryptedMessage(string newText) {
+	int newTextLength = newText.length();
+	// invalid if new text is too long or if is ""
+	if ((newTextLength > MAXDECRYPTEDTLEN) || (newTextLength == 0)) {
+		return false;
+	}
+	decryptedMessage = Speech::toLowerCase(newText);
+	return true;
+}
 
+bool Speech::setTempo(int speed) {
+	if ((speed >= 1) && (speed <= NUMLEDSPEEDS)) {
+		tempo = speed;
+		return true;
+	}
+	return false;
+}
+
+bool Speech::setColor(string color) {
+	// check if a valid RGB formatted string
+	string reformatColor = MorseCodeMod::isValidColor(color);
+	if (reformatColor.size() != 0) { // "" if not valid RGB 
+		rgbColor = color;
+		return true;
+	}
+	return false;
+}
+
+string Speech::getDecryptedMessage() {
+	return decryptedMessage;
+}
+
+string Speech::getColor() {
+	return rgbColor;
+}
+
+int Speech::getTempo() {
+	return tempo;
+}
 
 
 

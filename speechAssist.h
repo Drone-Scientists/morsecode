@@ -54,7 +54,7 @@ public:
 // with morse code and special (optional) key phrases like "in (color)." 
 
 class Speech {
-public:
+private:
 	// all start with default vals, constructor changes vals if STT has command
 	std::string decryptedMessage = "";
 	std::string rgbColor = DEFAULTCOLOR;
@@ -70,6 +70,15 @@ public:
 	static bool addSTTColor(std::string const& colorName, std::string const& color);
 	static std::vector<std::string> splitStringBySpaces(std::string text); 
 	static std::string toLowerCase(std::string text);
+
+	// Getters and Setters - private fields so user can't change values that are
+	// incompatible with the drone (Ex. a tempo > NUMLEDSPEEDS)
+	bool setDecryptedMessage(std::string newText); // make sure size !> max dec length
+	bool setColor(std::string color); // make sure is a valid RGB color 
+	bool setTempo(int speed); // new speed needs to be 1-NUMLEDSPEEDS
+	std::string getDecryptedMessage();
+	std::string getColor();
+	int getTempo();
 };
 
 #endif

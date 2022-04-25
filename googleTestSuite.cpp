@@ -1,3 +1,9 @@
+/*
+BELOW IS THE TESTING SUITE - googleTestSuite.cpp
+- Includes comments/code from Testing Assignment &&
+Additional tests added after Testing Assignment
+*/
+
 #include <iostream>
 #include <gtest/gtest.h>
 #include "speechAssist.h"
