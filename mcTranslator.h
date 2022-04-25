@@ -6,8 +6,8 @@
 
 extern std::map<char, std::string> mcKey;
 
-#define MAXDECRYPTEDTLEN 50
-#define MAXENCRPYEDTLEN 300 // longest possible mc char * max message length 
+#define MAXDECRYPTEDTLEN 100
+#define MAXENCRPYEDTLEN 500 // longest possible mc message (num of chars)
 
 // Morse Code Timing:
 // in between letters will add " " equal to 3 * dit length 

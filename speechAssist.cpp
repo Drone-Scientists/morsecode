@@ -3,6 +3,8 @@
 #include <map>
 #include <algorithm>
 #include <stdlib.h>
+#include <vector>
+#include <sstream>
 #include <stdexcept>
 #include <array>
 #include <ctype.h>
@@ -12,7 +14,8 @@ using namespace std;
 map<string, string> voiceToColors = {
 	{"white", "FFFFFF"}, {"red", "FF0000"}, {"green", "008000"},
 	{"blue", "0000FF"}, {"purple", "800080"}, {"yellow", "FFFF00"},
-	{"pink", "FFC0CB"}, {"brown", "A52A2A"}
+	{"pink", "FFC0CB"}, {"brown", "A52A2A"}, {"magenta", "FF00FF"},
+	{"fuchsia", "FF00FF"}
 };
 
 // used when user specifies speed vocally in morse code command 
@@ -122,8 +125,9 @@ bool MorseCodeMod::addClrRecog(string const& clrName, string const& rgbHex) {
 
 
 // SPEECH CLASS 
+// state speed command first
 
-// "hello world in speed five in color navy blue"
+// "hello world in speed five and in color red"
 // "hello world in speed five"
 // "hello world in color navy blue"
 
@@ -131,25 +135,18 @@ bool MorseCodeMod::addClrRecog(string const& clrName, string const& rgbHex) {
 // If find "in speed", then next word is speed (five NOT 5)
 
 Speech::Speech() { 
+	// first set default values
 	decryptedMessage = "";
-	rgbColor = "haha";
-	tempo = 5;
-	string text = voiceToText();
-	// Check if text has commands in them 
+	rgbColor = DEFAULTCOLOR;
+	tempo = DEFAULTTEMPO;
+	string text = voiceToText(); // full text, including commands
+	// Check if text has commands in them (in color _ and in speed _)
+	text = colorInText(text);
 
 	// at very end, if decrypted > MAXLENGTH, then throw exception 
 }
 
 string Speech::voiceToText() { 
-	//cin.ignore();
-	//getline(cin, messageFromPython);
-	//system("/usr/bin/python3 speechRec.py");
-	//getline(cin, messageFromPython);
-	// retrieve message that python file printed to stdout
-	//cin.ignore();
-	//getline(cin, messageFromPython);
-	//return "hello world";
-
 	string spokenMessage;
 	std::array<char, 256> buff;
 
@@ -165,17 +162,63 @@ string Speech::voiceToText() {
 		spokenMessage += buff.data();
 	}
 	pclose(fp);
-
-	cout << "YOU SAID: " + spokenMessage;
+	cout << "You said:\n" << spokenMessage << endl;
 	return spokenMessage;
 
 }
 
+// "... in color navy blue"
+// checks if there is a color command in the text, if there is 
+// if removes it from the command and changes color field value, returns
+// the command
 string Speech::colorInText(string text) { 
-	return "";
+	vector<string> words = splitStringBySpaces(text); // words in text
+	string textNoColorCommand = words[0];
+
+	bool foundInColor = false;
+	string prevWord = words[0]; 
+	string color = "";
+	int numOfWords = words.size();
+	for (int i = 1; i < numOfWords; i++) { // iterate through words in vector 
+		string twoWords = prevWord + ' ' + words[i];
+		cout << "2 WORDS: <" + twoWords + ">";
+		if (foundInColor && (color.size() == 0)) { // first word of color
+			color += words[i];
+
+		} else if (foundInColor && (color.size() != 0)) {
+			color = color + ' ' + words[i];
+
+		} else if (twoWords.compare("in color") == 0) { // color cmd keyword found 
+			foundInColor = true;
+			for (int j = 0; j < 3; j++) { // remove " in" from string 
+				textNoColorCommand.pop_back();
+			}
+
+		} else {
+			textNoColorCommand = textNoColorCommand + ' ' + words[i];
+		}
+
+		prevWord = words[i];
+	}
+	cout << "\nThe color found is:\n" << color;
+	cout << "\nWITHOUT COLOR + COLOR COMMAND:\n" << textNoColorCommand << endl;
+
+	if (color.size() != 0) { // a color command was found, change color field value 
+		std::map<string, string>::iterator it = voiceToColors.find(color);
+		if (it != voiceToColors.end()) { // color was found in STT map! 
+			rgbColor = voiceToColors[color];
+
+		} else { 
+			throw "" + color + " is not a STT color. You may add this color using\n"
+			+ "the menu option 8\n";
+		}
+	}
+
+	return textNoColorCommand;
 }
 
 string Speech::speedInText(string text) {
+	// if last word is 'and', remove it 
 	return "";
 }
 
@@ -186,26 +229,16 @@ bool Speech::addSTTColor(string const& colorName, string const& color) {
 	return true;
 }
 
+vector<string> Speech::splitStringBySpaces(string text) {
+	vector<string> words;
+	stringstream ss(text);
+	string word;
+	while (ss >> word) {
+		words.push_back(word); // add word to vector
+	}
+	return words;
+}
 
-
-
-
-from graphics import *
-
-# Variables / Constants
-WINDOW_WIDTH = 500
-WINDOW_HEIGHT = 500
-
-def main():
-	window = GraphWin("Drone Window", WINDOW_WIDTH, WINDOW_HEIGHT)
-	window.setBackground() # black background
-
-
-	# respond to user hitting red x
-	win.getMouse()
-	win.close()
-
-main()
 
 
 

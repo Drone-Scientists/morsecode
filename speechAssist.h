@@ -6,6 +6,7 @@
 // LED color and tempo/speed of the 'dits/dahs'
 #include "mcTranslator.h"
 #include <string>
+#include <vector>
 #include <map>
 
 extern std::map<std::string, std::string> voiceToColors;
@@ -13,7 +14,7 @@ extern std::map<std::string, std::string> voiceToColors;
 // higher value = faster MC communication = shorter 'dit' time
 #define NUMLEDSPEEDS 5
 #define DEFAULTTEMPO 3
-#define DEFAULTCOLOR "FFFFFF" // white 
+#define DEFAULTCOLOR "FFFF00" // yellow 
 
 class MorseCodeMod {
 private: // privacy due to needing to check drone compatibility to field vals 
@@ -63,7 +64,8 @@ public:
 	std::string voiceToText();
 	std::string colorInText(std::string text); // find things like "in red" after tts conversion 
 	std::string speedInText(std::string text);
-	static bool addSTTColor(std::string const& colorName, std::string const& color); 
+	static bool addSTTColor(std::string const& colorName, std::string const& color);
+	static std::vector<std::string> splitStringBySpaces(std::string text); 
 };
 
 #endif
