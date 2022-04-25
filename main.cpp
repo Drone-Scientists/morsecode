@@ -305,9 +305,11 @@ namespace userHandler {
 		ofstream messageFile("message.txt"); // create + open file for message
 		messageFile << sendMessage->getEncrypted() << "\n"; // FIRST LINE - Morse code
 		messageFile << sendMods->getColor() << "\n"; // SECOND LINE - color in RGB Hex
-		messageFile << sendMods->getTempo() << "\n";
+		messageFile << sendMods->getTempo() << "\n"; // THIRD LINE - tempo 
+		messageFile.close(); // close file stream
+
 		// DONT DELETE message sent (save that for the delete menu option)
-		// system call to python script
+		system("/usr/bin/python3 droneGraphics.py"); // system call to python script
 
 		cout << "\nSuccess! Drone has finished communicating your message.\n" <<
 			"Would you like to send another? ('Y' or 'N')\n";
