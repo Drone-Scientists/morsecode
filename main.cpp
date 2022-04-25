@@ -1,5 +1,6 @@
 #include <map>
 #include <iostream>
+#include <fstream>
 #include <string>
 #include <exception>
 #include <vector>
@@ -72,10 +73,10 @@ namespace userHandler {
 		"(1) Add a Message\n" << // 2 routes, have message or have MC 
 		"(2) Add a Message by speaking into your microphone\n" <<
 		"(3) Print Saved Messages\n" << 
-		"(4) Send Message to Drone\n" << // WORK IN PROG 
+		"(4) Send Message to Drone\n" << 
 		"(5) Delete Messages\n" <<
 		"(6) Print Morse Code Key\n" <<
-		"(7) Print Colors options for Speech to Text (STT)\n" <<
+		"(7) Print Color options for Speech to Text (STT)\n" <<
 		"(8) Add Colors for Speech to Text (STT)\n" <<
 		"(9) Exit Program\n";
 
@@ -95,7 +96,7 @@ namespace userHandler {
 	}
 
 	bool backToMenu() {
-		cout << "\nReturn to Main Menu? ('Y' or 'N')" << endl;
+		cout << "\nReturn to Main Menu? ('Y' or 'N') 'N' to repeat action." << endl;
 		return userHandler::yesNoResponse();
 	}
 
@@ -170,7 +171,9 @@ namespace userHandler {
 
 		// USER MAKING MOD OBJECT 
 		cout << "\nWould you like to specify a color for the drone's LED? " <<
-		"('Y' or 'N')\n (The default color is 'FFFFFF' - white)" << endl;
+		"('Y' or 'N')\n (The default color is '" << DEFAULTCOLOR << "' - " <<
+		DEFAULTCOLORNAME << ")" << endl;
+
 		if (userHandler::yesNoResponse()) { // yes wants to specify color 
 			cout << "Give color in hex. Example: give 'FF0000' for red" << endl;
 			cin >> rgbColor;
@@ -208,13 +211,8 @@ namespace userHandler {
 		struct MessageDetails md = {mess, mod};
 		vect.push_back(md);
 
-		cout << "Successfully added Message! Hit 'N' to add another." << endl;
+		cout << "Successfully added Message!" << endl;
 		if (!userHandler::backToMenu()) userHandler::addMessageHandler(vect);
-	}
-
-
-	void sendMessage(vector<MessageDetails>& vect) { 
-		// WORK IN PROGRESS - post midterm mile
 	}
 
 	void deleteHandler(vector<MessageDetails>& vect) {
@@ -234,7 +232,7 @@ namespace userHandler {
 		vect.erase(vect.begin() + delPick - 1); // remove from vector 
 
 		cout << "Successfully deleted Message. Hit 'N' to delete another." << endl;
-		if (!userHandler::backToMenu()) userHandler::addMessageHandler(vect);
+		if (!userHandler::backToMenu()) userHandler::deleteHandler(vect);
 	}
 
 	void addColorHandler() {
@@ -268,15 +266,52 @@ namespace userHandler {
 	void addMP3MessageHandler(vector<MessageDetails>& vect) { 
 		string resp;
 		cout << "Type <Y> when ready to speak into your microphone\n";
+		cin.ignore();
 		getline(cin, resp); // waits for user to type Y (no error checking)
 
 		Speech* s = new Speech();
 		cout << "\nSPEECH:\n";
 		s->printSpeech();
 
-		// Now add this to menu vector
+		// make Message and MorseCodeMod objects, so can be added to menu vector
+		// and can get encrypted MC 
+		Message* m = new Message (s->getDecryptedMessage() , false); // a decry mess
+		MorseCodeMod * mcm = new MorseCodeMod(s->getColor(), s->getTempo());
+		struct MessageDetails md = {m, mcm};
+		vect.push_back(md); // add to menu vector
+		delete(s); // memory leaks == :'(
+		cout << "Successfully added Message via Speech-to-Text!\n";
 
 		return;
+	}
+
+	void sendMessage(vector<MessageDetails>& vect) { 
+		int numMessages = vect.size();
+		userHandler::printMessageList(vect);
+		int sendPick;
+		cout << "Enter the # of the Message you want to send to the drone." << endl;
+		cin >> sendPick;
+		while (cin.fail() || (sendPick < 1 || sendPick > numMessages)) {
+			cin.clear();
+			cin.ignore(numeric_limits<streamsize>::max(), '\n');
+			cout << "Invalid input. Enter the # of the Message to send." << endl;
+			cin >> sendPick;
+		}
+
+		// struct elements of the vector # (message) the user picked to send 
+		Message* sendMessage = vect.at(sendPick - 1).m;
+		MorseCodeMod* sendMods = vect.at(sendPick - 1).mcm;
+
+		ofstream messageFile("message.txt"); // create + open file for message
+		messageFile << sendMessage->getEncrypted() << "\n"; // FIRST LINE - Morse code
+		messageFile << sendMods->getColor() << "\n"; // SECOND LINE - color in RGB Hex
+		messageFile << sendMods->getTempo() << "\n";
+		// DONT DELETE message sent (save that for the delete menu option)
+		// system call to python script
+
+		cout << "\nSuccess! Drone has finished communicating your message.\n" <<
+			"Would you like to send another? ('Y' or 'N')\n";
+		if (userHandler::yesNoResponse()) userHandler::sendMessage(vect); // recall 
 	}
 
 };
@@ -345,7 +380,7 @@ int main() {
 			userHandler::backToMenu();
 
 		} else if (menuPick == 4) { // send message to drone 
-			// WIP 
+			userHandler::sendMessage(vect);
 
 		} else if (menuPick == 5) { // delete messages 
 			userHandler::deleteHandler(vect);

@@ -14,7 +14,8 @@ extern std::map<std::string, std::string> voiceToColors;
 // higher value = faster MC communication = shorter 'dit' time
 #define NUMLEDSPEEDS 5
 #define DEFAULTTEMPO 3
-#define DEFAULTCOLOR "FFFF00" // yellow 
+#define DEFAULTCOLOR "FFFF00" // yellow in hex
+#define DEFAULTCOLORNAME "yellow"
 
 class MorseCodeMod {
 private: // privacy due to needing to check drone compatibility to field vals 
