@@ -333,7 +333,8 @@ namespace speechToTextInfo {
 		"hello world in speed four and in color red\n" <<
 		"** Note: must use words 'in speed' & 'in color' for commands\n" <<
 		"** Note: color name must be available (menu option 8 to add a " <<
-		"color for STT\n" << endl;
+		"color for STT)\n** Note: must specify speed before color if using " <<
+		"both commands\n" << endl;
 	}
 };
 

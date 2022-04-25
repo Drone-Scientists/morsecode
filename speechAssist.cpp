@@ -23,7 +23,8 @@ map<string, string> voiceToColors = {
 // 
 map<string, int> voiceToSpeeds  {
 	{"one", 1}, {"won", 1}, {"two", 2}, {"to", 2}, {"too", 2},
-	{"three", 3}, {"four", 4}, {"for", 4}, {"five", 5}
+	{"three", 3}, {"four", 4}, {"for", 4}, {"five", 5}, {"1", 1},
+	{"2", 2}, {"3", 3}, {"4", 4}, {"5", 5}
 };
 
 MorseCodeMod::MorseCodeMod() { 
@@ -208,7 +209,6 @@ string Speech::colorInText(string text) {
 	int numOfWords = words.size();
 	for (int i = 1; i < numOfWords; i++) { // iterate through words in vector 
 		string twoWords = prevWord + ' ' + words[i];
-		cout << "2 WORDS: <" + twoWords + ">";
 		if (foundInColor && (color.size() == 0)) { // first word of color
 			color += words[i];
 
