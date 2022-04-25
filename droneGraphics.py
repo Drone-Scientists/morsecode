@@ -30,10 +30,9 @@ Note: used morsecode.world/international/timing.html as a guide
 WINDOW_WIDTH = 500
 WINDOW_HEIGHT = 500
 skyBlue = (137, 207, 240)
-UNIT = .1 # num of seconds, so 1 == 1 second 
-
-def determineUnitSpeed(tempo):
-	return "WIP"
+mcSpeeds = {
+	"1" : 1, "2" : .5, "3" : .2, "4" : .1, "5" : .05
+}
 
 # mc is morsecode message
 def CommMorseCodeLED(morsecode, R, G, B, tempo):
@@ -43,6 +42,8 @@ def CommMorseCodeLED(morsecode, R, G, B, tempo):
 	droneImage.draw(win)
 	LED = Circle(Point(250, 200), 20)
 	LED.draw(win)
+
+	UNIT = mcSpeeds[tempo]
 
 	# <.... . .-.. .-.. --- / .-- --- .-. .-.. -.. > has trailing space
 
@@ -85,8 +86,6 @@ def main():
 	rgbColor = (lines[1])[:-1]
 	tempo = (lines[2])[:-1]
 	messageFile.close() # close file stream 
-
-	print("<"+morseCode+">")
 
 	# **decimal value** of each R G B, message.txt has in hex, but
 	# graphics module needs colors in decimal
