@@ -49,23 +49,27 @@ public:
 
 // SPEECH CLASS 
 // The Speech class allows the user to provide mp3 audio files that will undergo 
-// speech-to-text (STT) conversion with the help of the API AssemblyAI (www.assemblyai.com). 
+// speech-to-text (STT) conversion with the help of Google's API in the PyAudio module.
 // The converted text will contain the decypted message the user wants to communicate 
 // with morse code and special (optional) key phrases like "in (color)." 
 
 class Speech {
 public:
-	std::string decryptedMessage;
-	std::string rgbColor; // taken from speech-to-text conversion 
-						  // if not specified, then stays default color
-	int tempo;
+	// all start with default vals, constructor changes vals if STT has command
+	std::string decryptedMessage = "";
+	std::string rgbColor = DEFAULTCOLOR;
+	int tempo = DEFAULTTEMPO;
+
 public:
-	Speech(); 
+	Speech(); // user needs to do STT
+	Speech(std::string text); // user did STT prior, so pass string from STT here
 	std::string voiceToText();
+	void printSpeech();
 	std::string colorInText(std::string text); // find things like "in red" after tts conversion 
 	std::string speedInText(std::string text);
 	static bool addSTTColor(std::string const& colorName, std::string const& color);
 	static std::vector<std::string> splitStringBySpaces(std::string text); 
+	static std::string toLowerCase(std::string text);
 };
 
 #endif

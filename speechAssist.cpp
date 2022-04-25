@@ -1,4 +1,5 @@
 #include "speechAssist.h"
+#include "mcTranslator.h"
 #include <iostream>
 #include <map>
 #include <algorithm>
@@ -124,6 +125,9 @@ bool MorseCodeMod::addClrRecog(string const& clrName, string const& rgbHex) {
 
 
 
+
+
+
 // SPEECH CLASS 
 // state speed command first
 
@@ -134,16 +138,39 @@ bool MorseCodeMod::addClrRecog(string const& clrName, string const& rgbHex) {
 // So, if find "in color" then rest of string is the color name
 // If find "in speed", then next word is speed (five NOT 5)
 
+// Constructor that prompts user for STT
 Speech::Speech() { 
-	// first set default values
-	decryptedMessage = "";
-	rgbColor = DEFAULTCOLOR;
-	tempo = DEFAULTTEMPO;
-	string text = voiceToText(); // full text, including commands
-	// Check if text has commands in them (in color _ and in speed _)
+	string text = voiceToText(); // full text, including optional commands
+	text = toLowerCase(text);
+	// Check if text has commands in them (in speed <int> and in color <string>)
 	text = colorInText(text);
+	text = speedInText(text);
+	if (text.size() > MAXDECRYPTEDTLEN) { // check if command is too long
+		throw "Your command <" + text + "> exceeds the max character length of " 
+				+ std::to_string(MAXDECRYPTEDTLEN) + "\n";
+	}
+	decryptedMessage = text;
+}
 
-	// at very end, if decrypted > MAXLENGTH, then throw exception 
+// Constructor that does NOT prompt user for STT, used when user has done
+// STT prior, and also used for testing purposes for the Speech class 
+Speech::Speech(string text) {
+	text = toLowerCase(text);
+	text = colorInText(text);
+	text = speedInText(text);
+	if (text.size() > MAXDECRYPTEDTLEN) { // check if command is too long
+		throw "Your command <" + text + "> exceeds the max character length of " 
+				+ std::to_string(MAXDECRYPTEDTLEN) + "\n";
+	}
+	decryptedMessage = text;
+
+}
+
+void Speech::printSpeech() {
+	cout << "Message: <" + decryptedMessage + ">\n";
+	cout << "Color (in hex): <" + rgbColor + ">\n";
+	cout << "Tempo: <" + std::to_string(tempo) + ">" << endl;
+	return;
 }
 
 string Speech::voiceToText() { 
@@ -158,7 +185,7 @@ string Speech::voiceToText() {
 		std::cerr << "Error calling python STT program.\n" << std::endl;
 		cout << "error !!\n";
 	}
-	while(fgets(buff.data(), 256, fp) != NULL) {
+	while (fgets(buff.data(), 256, fp) != NULL) {
 		spokenMessage += buff.data();
 	}
 	pclose(fp);
@@ -195,13 +222,11 @@ string Speech::colorInText(string text) {
 			}
 
 		} else {
-			textNoColorCommand = textNoColorCommand + ' ' + words[i];
+			textNoColorCommand = textNoColorCommand + " " + words[i];
 		}
 
 		prevWord = words[i];
 	}
-	cout << "\nThe color found is:\n" << color;
-	cout << "\nWITHOUT COLOR + COLOR COMMAND:\n" << textNoColorCommand << endl;
 
 	if (color.size() != 0) { // a color command was found, change color field value 
 		std::map<string, string>::iterator it = voiceToColors.find(color);
@@ -210,16 +235,49 @@ string Speech::colorInText(string text) {
 
 		} else { 
 			throw "" + color + " is not a STT color. You may add this color using\n"
-			+ "the menu option 8\n";
+				+ "the menu option 8\n";
 		}
 	}
 
 	return textNoColorCommand;
 }
 
+// Checks if 
 string Speech::speedInText(string text) {
-	// if last word is 'and', remove it 
-	return "";
+	vector<string> words = splitStringBySpaces(text); // words in text
+	string textNoSpeedCommand = words[0];
+
+	bool foundInSpeed = false;
+	string prevWord = words[0]; 
+	int numOfWords = words.size();
+	for (int i = 1; i < numOfWords; i++) { // iterate through words in vector 
+		string twoWords = prevWord + ' ' + words[i];
+		if (twoWords.compare("in speed") == 0) {
+			foundInSpeed = true;
+
+		} else if (foundInSpeed) {
+			string speedRequest = words[i];
+			std::map<string, int>::iterator it = voiceToSpeeds.find(speedRequest);
+			if (it != voiceToSpeeds.end()) { // speed was found in voiceToSpeed map
+				tempo = voiceToSpeeds[speedRequest];
+
+			} else { // speed was not found 
+				throw "" + speedRequest + " is not a morse code speed. The available\n"
+					+ "speeds are 1-" + std::to_string(NUMLEDSPEEDS) + "\n";
+			}
+
+			for (int j = 0; j < 3; j++) { // remove " in" from string 
+				textNoSpeedCommand.pop_back();
+			}
+			break; // skips possible trailing 'and'
+
+		} else {
+			textNoSpeedCommand = textNoSpeedCommand + " " + words[i];
+		}
+		prevWord = words[i];
+	}
+
+	return textNoSpeedCommand;
 }
 
 bool Speech::addSTTColor(string const& colorName, string const& color) {
@@ -239,6 +297,15 @@ vector<string> Speech::splitStringBySpaces(string text) {
 	return words;
 }
 
+// return string passed but all chars are lowercase 
+string Speech::toLowerCase(string text) {
+	int textLength = text.size(); // bound
+	string lowerCaseText = text;
+	for (int i = 0; i < textLength; i++) {
+		lowerCaseText[i] = tolower(lowerCaseText[i]); // set char equal to itself lowercase
+	}
+	return lowerCaseText; 
+}
 
 
 

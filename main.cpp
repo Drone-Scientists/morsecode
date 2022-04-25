@@ -268,6 +268,8 @@ namespace userHandler {
 	void addMP3MessageHandler(vector<MessageDetails>& vect) { 
 		Speech* s;
 		s = new Speech();
+		cout << "\nSPEECH:\n";
+		s->printSpeech();
 		return;
 	}
 
