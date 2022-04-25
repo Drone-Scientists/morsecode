@@ -309,7 +309,7 @@ namespace userHandler {
 		messageFile.close(); // close file stream
 
 		// DONT DELETE message sent (save that for the delete menu option)
-		system("/usr/bin/python3 droneGraphics.py"); // system call to python script
+		system("python3 droneGraphics.py"); // system call to python script
 
 		cout << "\nSuccess! Drone has finished communicating your message.\n" <<
 			"Would you like to send another? ('Y' or 'N')\n";

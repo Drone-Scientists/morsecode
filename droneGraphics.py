@@ -9,6 +9,18 @@ located in the same directory as this file.
 # Variables / Constants
 WINDOW_WIDTH = 500
 WINDOW_HEIGHT = 500
+skyBlue = (137, 207, 240)
+
+# mc is morsecode message
+def morseCode(mc, R, G, B, tempo):
+	win = GraphWin("Drone Window", WINDOW_WIDTH, WINDOW_HEIGHT)
+	win.setBackground(color_rgb(skyBlue[0], skyBlue[1], skyBlue[2])) # sky
+	droneImage = Image(Point(250, 250), "drone1.png") # transparent drone png
+	droneImage.draw(win)
+
+	win.getMouse() # waits for a mouse response
+	win.close()
+
 
 def main():
 	# First, grab morse code info from message.txt
@@ -19,26 +31,13 @@ def main():
 	tempo = (lines[2])[:-1]
 	messageFile.close() # close file stream 
 
-	# decimal value of each R G B, which is 2 digit hex (need to convert)
-	R = rgbColor[0:2] # first 2 chars
-	G = rgbColor[2:4]
-	B = rgbColor[4:6]
-	print(rgbColor)
-	print(R)
-	print(G)
-	print(B)
+	# **decimal value** of each R G B, message.txt has in hex, but
+	# graphics module needs colors in decimal
+	Rdecimal = int(rgbColor[0:2], 16) # first 2 chars
+	Gdecimal = int(rgbColor[2:4], 16)
+	Bdecimal = int(rgbColor[4:6], 16)
 
-	win = GraphWin("Drone Window", WINDOW_WIDTH, WINDOW_HEIGHT)
-	win.setBackground(color_rgb(255, 0, 0)) # black background
-	#droneImage = Image(Point(250, 250), "drone1.png")
-	#droneImage.draw(win)
-	c = Circle(Point(50, 50), 10)
-	c.draw(win)
-
-	# respond to user hitting red x
-	#quit()
-	#window.getMouse
-	window.close()
+	morseCode(morseCode, Rdecimal, Gdecimal, Bdecimal, tempo)
 
 main()
 
