@@ -30,8 +30,8 @@ namespace mcInfo {
 
 	void printTTSColors(map<string, string>& voiceToColors) { // print TTS map vals
 		cout << "The following colors can be recognized when you speak your " <<
-		"message\n into the microphone when 'in (color-name) is said.\n";
-		cout << "\nTEXT TO SPEECH COLORS:\n";
+		"message\n into the microphone when 'in color (color-name) is said.\n";
+		cout << "\nSPEECH RECOGNITION COLORS:\n";
 		map<string, string>::iterator it;
 		for (it = voiceToColors.begin(); it != voiceToColors.end(); it++) {
 			cout << it->first + "  -->  " + it->second + "\n";
@@ -116,7 +116,7 @@ namespace userHandler {
 			return;
 		}
 		for (int i = 0; i < numVectEles; i++) { // each vector element
-			cout << "Message " + to_string(i + 1) + ":\n" << 
+			cout << "Message " + to_string(i + 1) + "\n" << 
 			"Decrypted: <" << (vect.at(i).m)->getDecrypted() << ">\n" << // Message
 			"Encrypted: <" << (vect.at(i).m)->getEncrypted() << ">\n" <<
 			"    Color: " << (vect.at(i).mcm)->getColor() << "\n" << // MorseCodeMod

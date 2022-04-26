@@ -72,7 +72,6 @@ def CommMorseCodeLED(morsecode, R, G, B, tempo):
 			time.sleep((7 * UNIT) - (UNIT)) # sleep 7 units - 1 unit
 
 	# done with Morse Code, now exit program 
-	#win.getMouse() # waits for a mouse response
 	print("Morse Code Finished! Bye now.")
 	win.close()
 
