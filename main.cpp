@@ -11,7 +11,6 @@ using namespace std;
 
 #define NUMMENUITEMS 9
 
-
 struct MessageDetails {
 	Message* m;
 	MorseCodeMod* mcm;
@@ -26,6 +25,8 @@ namespace mcInfo {
 			string s(1, iter->first);
 			cout << "<" + s + ">   -->   <" + iter->second + ">\n";
 		}
+		cout << "\nEXAMPLE: <hi bye> --> <.... .. / -... -.-- . >\n" <<
+		"Note: Space before and after '/'\n      Space at end of message" << endl;
 	}
 
 	void printTTSColors(map<string, string>& voiceToColors) { // print TTS map vals
@@ -121,6 +122,10 @@ namespace userHandler {
 			"Encrypted: <" << (vect.at(i).m)->getEncrypted() << ">\n" <<
 			"    Color: " << (vect.at(i).mcm)->getColor() << "\n" << // MorseCodeMod
 			"    Speed: " << (vect.at(i).mcm)->getTempo() << "\n" << endl;
+		}
+
+		if (!userHandler::backToMenu()) {
+			userHandler::printMessageList(vect);
 		}
 	}
 
@@ -227,12 +232,14 @@ namespace userHandler {
 			cout << "Invalid input. Please enter <#> of Message to delete." << endl;
 			cin >> delPick;
 		}
-		free(vect.at(delPick - 1).m); // free Message
-		free(vect.at(delPick - 1).mcm); // free Mod
+		delete(vect.at(delPick - 1).m); // delete Message
+		delete(vect.at(delPick - 1).mcm); // delete Mod
 		vect.erase(vect.begin() + delPick - 1); // remove from vector 
 
-		cout << "Successfully deleted Message. Hit 'N' to delete another." << endl;
-		if (!userHandler::backToMenu()) userHandler::deleteHandler(vect);
+		cout << "Successfully deleted Message." << endl;
+		if (!userHandler::backToMenu()) {
+			userHandler::deleteHandler(vect);
+		}
 	}
 
 	void addColorHandler() {
@@ -255,15 +262,17 @@ namespace userHandler {
 				continue;
 			}
 
-			cout << "Success! The color " + newSTTColorName + " (" + newSTTrgb + ")"
+			cout << "\nSuccess! The color " + newSTTColorName + " (" + newSTTrgb + ")"
 			+ " has been added\nfor Speech-to-Text Conversion." << endl;
-			cout << "Would you like to add another color for STT? ('Y' or 'N')" << endl;
-			if (!userHandler::yesNoResponse()) break;
+			cout << "\nWould you like to add another color for STT? ('Y' or 'N')" << endl;
+			if (!userHandler::yesNoResponse()) {
+				break;
+			}
 			cin.ignore();
 		}
 	}
 
-	void addMP3MessageHandler(vector<MessageDetails>& vect) { 
+	void addMessageViaVoiceHandler(vector<MessageDetails>& vect) { 
 		string resp;
 		cout << "Type <Y> when ready to speak into your microphone\n";
 		cin.ignore();
@@ -281,6 +290,10 @@ namespace userHandler {
 		vect.push_back(md); // add to menu vector
 		delete(s); // memory leaks == :'(
 		cout << "Successfully added Message via Speech-to-Text!\n";
+
+		if (!userHandler::backToMenu()) {
+			userHandler::addMessageViaVoiceHandler(vect);
+		}
 
 		return;
 	}
@@ -313,7 +326,10 @@ namespace userHandler {
 
 		cout << "\nSuccess! Drone has finished communicating your message.\n" <<
 			"Would you like to send another? ('Y' or 'N')\n";
-		if (userHandler::yesNoResponse()) userHandler::sendMessage(vect); // recall 
+
+		if (userHandler::yesNoResponse()) {
+			userHandler::sendMessage(vect); // recall func if user says yes 
+		}
 	}
 
 };
@@ -375,12 +391,10 @@ int main() {
 		} else if (menuPick == 2) { // add via mp3
 			speechToTextInfo::printSpeechToTextInfo();
 			speechToTextInfo::printSpeechToTextExamples();
-			userHandler::addMP3MessageHandler(vect);
-			userHandler::backToMenu();
+			userHandler::addMessageViaVoiceHandler(vect);
 
 		} else if (menuPick == 3) { // print saved messages
 			userHandler::printMessageList(vect);
-			userHandler::backToMenu();
 
 		} else if (menuPick == 4) { // send message to drone 
 			userHandler::sendMessage(vect);
@@ -388,19 +402,23 @@ int main() {
 		} else if (menuPick == 5) { // delete messages 
 			userHandler::deleteHandler(vect);
 
-		} else if (menuPick == 6) {
-			mcInfo::printMorseHelp();
-			userHandler::backToMenu();
+		} else if (menuPick == 6) { // print morse code key
+			while (1) {
+				mcInfo::printMorseHelp();
+				if (userHandler::backToMenu()) break;
+			}
 
 		} else if (menuPick == 7) { // print colors
-			mcInfo::printTTSColors(voiceToColors);
-			userHandler::backToMenu();
+			while (1) {
+				mcInfo::printTTSColors(voiceToColors);
+				if (userHandler::backToMenu()) break;
+			}	
 
 		} else if (menuPick == 8) { // add colors 
 			mcInfo::printTTSColors(voiceToColors);
 			userHandler::addColorHandler();
 
-		} else {
+		} else { // 9, delete all objects in vector vect
 			userHandler::exitHandler(vect);
 		}
 	}

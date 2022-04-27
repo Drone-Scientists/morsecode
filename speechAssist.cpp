@@ -20,7 +20,7 @@ map<string, string> voiceToColors = {
 };
 
 // used when user specifies speed vocally in morse code command 
-// 
+// when using speech to text
 map<string, int> voiceToSpeeds  {
 	{"one", 1}, {"won", 1}, {"two", 2}, {"to", 2}, {"too", 2},
 	{"three", 3}, {"four", 4}, {"for", 4}, {"five", 5}, {"1", 1},
