@@ -1,7 +1,7 @@
 /*
 BELOW IS THE TESTING SUITE - googleTestSuite.cpp
-- Includes comments/code from Testing Assignment &&
-Additional tests added after Testing Assignment
+- Includes code and (a lot of) comments from Testing Assignment &&
+- Additional tests added after Testing Assignment
 */
 
 #include <iostream>
@@ -199,14 +199,16 @@ TEST(TestVoiceCommandWithMessage, helloWorldInTurquoise) {
 	delete(m);
 } 
 
+
+/* MORE TESTS (Not apart of assignment) */
+
+
+
 int main(int argc, char **argv) {
 	testing::InitGoogleTest(&argc, argv);
 	return RUN_ALL_TESTS();
 }
 
-
-
-/* MORE TESTS (Not apart of assignment) */
 
 
 

@@ -123,10 +123,6 @@ namespace userHandler {
 			"    Color: " << (vect.at(i).mcm)->getColor() << "\n" << // MorseCodeMod
 			"    Speed: " << (vect.at(i).mcm)->getTempo() << "\n" << endl;
 		}
-
-		if (!userHandler::backToMenu()) {
-			userHandler::printMessageList(vect);
-		}
 	}
 
 	void addMessageHandler(vector<MessageDetails>& vect) { 
@@ -394,7 +390,10 @@ int main() {
 			userHandler::addMessageViaVoiceHandler(vect);
 
 		} else if (menuPick == 3) { // print saved messages
-			userHandler::printMessageList(vect);
+			while (1) {
+				userHandler::printMessageList(vect);
+				if (userHandler::backToMenu()) break;
+			}
 
 		} else if (menuPick == 4) { // send message to drone 
 			userHandler::sendMessage(vect);
